@@ -20,6 +20,17 @@ Copy the generated key for use in environment variables.
    - Sign up with your GitHub account
 
 2. **Create New Project**
+   - Click "Start a New Project"
+   - Choose "Deploy from GitHub repo"
+   - Select your DataNexus repository
+   - Railway auto-detects Django and uses Procfile
+
+3. **Add PostgreSQL Database**
+   - In Railway dashboard, click "New"
+   - Select "Database" → "PostgreSQL"
+   - Railway automatically creates DATABASE_URL
+
+2. **Create New Project**
    - Click "New Project"
    - Select "Deploy from GitHub repo"
    - Connect your DataNexus repository
