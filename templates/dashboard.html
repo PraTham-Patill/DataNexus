@@ -1,0 +1,239 @@
+{% extends 'base.html' %}
+
+{% block title %}DataNexus - Dashboard{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h1>Data Visualization Dashboard</h1>
+        <p class="lead">Interactive charts displaying your books and weather data.</p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-3">
+        <div class="card text-white bg-primary">
+            <div class="card-body">
+                <h5 class="card-title">Total Books</h5>
+                <h2>{{ book_count }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-success">
+            <div class="card-body">
+                <h5 class="card-title">Weather Records</h5>
+                <h2>{{ weather_count }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-info">
+            <div class="card-body">
+                <h5 class="card-title">Unique Cities</h5>
+                <h2>{{ weather_data|length }}</h2>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="card text-white bg-warning">
+            <div class="card-body">
+                <h5 class="card-title">API Endpoints</h5>
+                <h2>6</h2>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Temperature by City (Bar Chart)</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="temperatureChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Humidity Distribution (Pie Chart)</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="humidityChart" width="400" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>Weather Data Visualization (Plotly)</h5>
+            </div>
+            <div class="card-body">
+                <div id="plotlyChart" style="width:100%;height:400px;"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5>Latest Weather Data</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>City</th>
+                                <th>Country</th>
+                                <th>Temperature (°C)</th>
+                                <th>Feels Like (°C)</th>
+                                <th>Humidity (%)</th>
+                                <th>Description</th>
+                                <th>Wind Speed</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for weather in weather_data %}
+                            <tr>
+                                <td>{{ weather.city }}</td>
+                                <td>{{ weather.country }}</td>
+                                <td>{{ weather.temperature }}°C</td>
+                                <td>{{ weather.feels_like }}°C</td>
+                                <td>{{ weather.humidity }}%</td>
+                                <td>{{ weather.description }}</td>
+                                <td>{{ weather.wind_speed }} m/s</td>
+                            </tr>
+                            {% empty %}
+                            <tr>
+                                <td colspan="7">No weather data available</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Chart.js Charts
+document.addEventListener('DOMContentLoaded', function() {
+    // Temperature Bar Chart
+    const tempCtx = document.getElementById('temperatureChart').getContext('2d');
+    const temperatureChart = new Chart(tempCtx, {
+        type: 'bar',
+        data: {
+            labels: [{% for weather in weather_data %}'{{ weather.city }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+            datasets: [{
+                label: 'Temperature (°C)',
+                data: [{% for weather in weather_data %}{{ weather.temperature }}{% if not forloop.last %},{% endif %}{% endfor %}],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.8)',
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(255, 205, 86, 0.8)',
+                    'rgba(75, 192, 192, 0.8)',
+                    'rgba(153, 102, 255, 0.8)',
+                ],
+                borderColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 205, 86, 1)',
+                    'rgba(75, 192, 192, 1)',
+                    'rgba(153, 102, 255, 1)',
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    title: {
+                        display: true,
+                        text: 'Temperature (°C)'
+                    }
+                }
+            }
+        }
+    });
+
+    // Humidity Pie Chart
+    const humCtx = document.getElementById('humidityChart').getContext('2d');
+    const humidityChart = new Chart(humCtx, {
+        type: 'pie',
+        data: {
+            labels: [{% for weather in weather_data %}'{{ weather.city }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+            datasets: [{
+                label: 'Humidity (%)',
+                data: [{% for weather in weather_data %}{{ weather.humidity }}{% if not forloop.last %},{% endif %}{% endfor %}],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 0.8)',
+                    'rgba(54, 162, 235, 0.8)',
+                    'rgba(255, 205, 86, 0.8)',
+                    'rgba(75, 192, 192, 0.8)',
+                    'rgba(153, 102, 255, 0.8)',
+                ],
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'bottom',
+                }
+            }
+        }
+    });
+
+    // Plotly Chart
+    const plotlyData = [{
+        x: [{% for weather in weather_data %}'{{ weather.city }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+        y: [{% for weather in weather_data %}{{ weather.temperature }}{% if not forloop.last %},{% endif %}{% endfor %}],
+        type: 'scatter',
+        mode: 'lines+markers',
+        name: 'Temperature',
+        line: {color: 'rgb(219, 64, 82)', width: 3}
+    }, {
+        x: [{% for weather in weather_data %}'{{ weather.city }}'{% if not forloop.last %},{% endif %}{% endfor %}],
+        y: [{% for weather in weather_data %}{{ weather.humidity }}{% if not forloop.last %},{% endif %}{% endfor %}],
+        type: 'scatter',
+        mode: 'lines+markers',
+        name: 'Humidity',
+        yaxis: 'y2',
+        line: {color: 'rgb(55, 128, 191)', width: 3}
+    }];
+
+    const layout = {
+        title: 'Temperature vs Humidity by City',
+        xaxis: {title: 'Cities'},
+        yaxis: {
+            title: 'Temperature (°C)',
+            side: 'left'
+        },
+        yaxis2: {
+            title: 'Humidity (%)',
+            side: 'right',
+            overlaying: 'y'
+        },
+        legend: {
+            x: 0,
+            y: 1
+        }
+    };
+
+    Plotly.newPlot('plotlyChart', plotlyData, layout);
+});
+</script>
+{% endblock %}

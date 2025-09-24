@@ -1,0 +1,107 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ project_name }} - Home{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <div class="jumbotron bg-primary text-white p-5 rounded mb-4">
+            <h1 class="display-4">Welcome to {{ project_name }}</h1>
+            <p class="lead">A comprehensive data management and visualization platform built with Django REST Framework.</p>
+            <hr class="my-4">
+            <p>Manage books, fetch weather data from external APIs, and visualize your data with interactive charts.</p>
+            <a class="btn btn-light btn-lg" href="{% url 'dashboard:dashboard' %}" role="button">View Dashboard</a>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-book"></i> Books Management</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">Manage your book collection with full CRUD operations.</p>
+                <p><strong>Total Books:</strong> {{ total_books }}</p>
+                <a href="/api/books/" class="btn btn-primary">API Endpoint</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-cloud"></i> Weather Data</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">Fetch and store weather data from external APIs.</p>
+                <p><strong>Weather Records:</strong> {{ total_weather_records }}</p>
+                <a href="/api/external/weather/" class="btn btn-primary">API Endpoint</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-chart-bar"></i> Data Visualization</h5>
+            </div>
+            <div class="card-body">
+                <p class="card-text">Interactive charts and data analytics dashboard.</p>
+                <p><strong>Visualizations:</strong> Available</p>
+                <a href="{% url 'dashboard:dashboard' %}" class="btn btn-primary">View Dashboard</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mt-4">
+    <div class="col-12">
+        <h3>API Endpoints</h3>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Endpoint</th>
+                        <th>Method</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><code>/api/books/</code></td>
+                        <td>GET, POST</td>
+                        <td>List all books or create a new book</td>
+                    </tr>
+                    <tr>
+                        <td><code>/api/books/{id}/</code></td>
+                        <td>GET, PUT, DELETE</td>
+                        <td>Retrieve, update, or delete a specific book</td>
+                    </tr>
+                    <tr>
+                        <td><code>/api/external/weather/</code></td>
+                        <td>GET</td>
+                        <td>List all weather data records</td>
+                    </tr>
+                    <tr>
+                        <td><code>/api/external/weather/fetch/</code></td>
+                        <td>POST</td>
+                        <td>Fetch weather data for a city</td>
+                    </tr>
+                    <tr>
+                        <td><code>/api/external/weather/latest/</code></td>
+                        <td>GET</td>
+                        <td>Get latest weather data for each city</td>
+                    </tr>
+                    <tr>
+                        <td><code>/api/external/weather/stats/</code></td>
+                        <td>GET</td>
+                        <td>Get weather statistics</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
